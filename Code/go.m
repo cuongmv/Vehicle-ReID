@@ -24,8 +24,8 @@ global strPathWorkingData;
 %Results data
 global strPathResults;
 
-strPathProject='C:\Projects\VehicleID\';
-strPathData=strcat(strPathProject,'Data\');
+strPathProject='C:\Projects\VehicleReID\';
+strPathData=strcat('C:\Projects\Dataset\VehicleReID\');
 strPathWorkingData=strcat(strPathProject,'WorkingData\');
 strPathResults=strcat(strPathProject,'Results\');
 
