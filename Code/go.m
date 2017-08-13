@@ -24,18 +24,19 @@ global strPathWorkingData;
 %Results data
 global strPathResults;
 
-strPathProject='C:\Projects\VehicleReID\';
+strPathProject='C:\Projects\Vehicle-ReID\';
 strPathData=strcat('C:\Projects\Dataset\VehicleReID\');
 strPathWorkingData=strcat(strPathProject,'WorkingData\');
 strPathResults=strcat(strPathProject,'Results\');
 
 if nargin > 0
 switch num
-    case 1 %Generating training list (train*.lst) 
+    case 1 %Generating training list (train*.lst, train.txt) 
         for index=1:5
             fileNameGroundTruth= strcat(strPathData,'ground_truth_shot_',num2str(index),'.csv');
-            GenerateTrainList(fileNameGroundTruth,index);
+            generateTrainAndTest(fileNameGroundTruth,index);
         end;
+        combineFile(); %Combine the train*.lst(s) into the file Train.txt
     case 2 %Generate color histogram feature vector files
        for i=1:5
             fileTrain= strcat(strPathWorkingData,'Train',num2str(i),'.lst');
