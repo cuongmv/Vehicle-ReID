@@ -1,7 +1,7 @@
 function  go(num)
 %go: run the main program
 %Parameter:
-%num=1: Generate training list (train*.lst) and storing them into $strPathProject\WorkingData
+%num=1: Generate training/testing list (train.txt, test.txt) and storing them into $strPathProject\WorkingData
 %num=2: Generate color histogram feature vector files (ColorHist*.mat,Label*.mat) and storing them into $strPathProject\WorkingData
 %num=3: Train and predict with color histogram feature. The results are saved into $strPathProject\Color\
 %num=4: View all the wrong pairs from the result of step 3
@@ -36,14 +36,13 @@ switch num
             fileNameGroundTruth= strcat(strPathData,'ground_truth_shot_',num2str(index),'.csv');
             generateTrainAndTest(fileNameGroundTruth,index);
         end;
-        combineFile(); %Combine the train*.lst(s) into the file Train.txt
+        combineFile(); %Combine the Train*.lst(s) into the file Train.txt, Test*.lst into the file Test.txt
     case 2 %Generate color histogram feature vector files
-       for i=1:5
-            fileTrain= strcat(strPathWorkingData,'Train',num2str(i),'.lst');
-            fileColorHist= strcat(strPathWorkingData,'ColorHist',num2str(i),'.mat');
-            fileLabel=strcat(strPathWorkingData,'Label',num2str(i),'.mat');
+            fileTrain= strcat(strPathWorkingData,'Train.txt');
+            fileColorHist= strcat(strPathWorkingData,'ColorHist.mat');
+            fileLabel=strcat(strPathWorkingData,'Label.mat');
             FeatureExtractAll_HistColor(fileTrain,fileColorHist,fileLabel);
-        end;
+        
     case 3 %Training with Color Histogram Feature
         for excludeFileNo=1:5;
             strPathToSaveResult=strcat(strPathResults,'Color\L',num2str(excludeFileNo),'\');
