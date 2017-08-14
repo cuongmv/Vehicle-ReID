@@ -1,36 +1,41 @@
-function [ predict_label_L, accuracy_L, dec_values_L ] = colorHistSVMTrain(excludeFileNo, strPathToSaveResult)
+function [ predict_label_L, accuracy_L, dec_values_L ] = colorHistSVMTrain(strPathToSaveResult)
 %ColorHistSVMTrain Huan luyen SVM
 % Tra ve strucModel 
 
 
 tic;
 
-global strPathData;
+
 global strPathWorkingData;
 
 
-%Get number of vector from the file "Element.txt"
-fElement=fopen(strcat(strPathData,'Element.txt'),'r');
-intElementArr = textscan(fElement, '%u16');
+%Get number of vector from the file "ElementFor*.txt"
+fElement=fopen(strcat(strPathWorkingData,'ElementForTrain.txt'),'r');
+intElementArrForTrain = textscan(fElement, '%u16');
 fclose(fElement);
+%Get number of vector from the file "ElementFor*.txt"
+fElement=fopen(strcat(strPathWorkingData,'ElementForTest.txt'),'r');
+intElementArrForTest = textscan(fElement, '%u16');
+fclose(fElement);
+
 
 trainData=[]; %Initialize the trainData matrix
 trainLabel=[]; %Initialize the trainLabel matrix 
 testData=[];%Initialize the testData matrix
 groundTruthLabel=[];%Initialize the groundTruthLabel matrix
 
-for i=1:5
-    %Number of color histogram concatenation vector of the ith ColorHist file 
-    numOfElemens=intElementArr{1,1}(i);
 
-    %Ten file ColorHist*.mat thu i
-    fileColorHistVector=strcat('ColorHist',num2str(i),'.mat');
+    %Number of color histogram concatenation vector of the ColorHist file 
+   numOfElemensTrain=intElementArrForTrain{1,1};
+   numOfElemensTest=intElementArrForTest{1,1};
+    %Ten file ColorHist.mat
+    fileColorHistVector=strcat('ColorHistForTrain.mat');
     pathTofileColorHistVector=strcat(strPathWorkingData,fileColorHistVector);
     fHist=fopen(pathTofileColorHistVector,'r');
     
     %Doc xong, chuyen vi de thu duoc dung format Color Histogram
     %Luu y: chieu dai cua color histogram concatenation vector là 4752 phan  tu 
-    colorHistVectorArr=(fread(fHist,[4752, numOfElemens],'uint16=>double'))';
+    colorHistVectorArr=(fread(fHist,[4752, numOfElemensTrain],'uint16=>double'))';
         
     %Normalize du lieu
     maxValue = max(max(colorHistVectorArr));
@@ -38,24 +43,43 @@ for i=1:5
     fclose(fHist);
     
     %Doc file Label vao labelArr (la ma tran cot)
-    fileLabel=strcat('Label',num2str(i),'.mat');
+    fileLabel=strcat('LabelForTrain.mat');
     fullPathToFileLabel=strcat(strPathWorkingData,fileLabel);
     fLabel=fopen(fullPathToFileLabel,'r');
-    labelArr= fread(fLabel,[numOfElemens, 1],'uint8=>double');
+    labelArr= fread(fLabel,[numOfElemensTrain, 1],'int8=>double');
     fclose(fLabel);
+    % Tap Train
+     trainData = colorHistVectorArr;
+     trainLabel= labelArr;
     
-    %Chia thanh 2 tap Train va Test de chuan bi vao giai doan Training
-    if (i== excludeFileNo)
-        testData=colorHistVectorArr;
-        groundTruthLabel=labelArr;
-        intNumOfTestElement=numOfElemens;
-    else
-        trainData = [trainData; colorHistVectorArr];
-        trainLabel= [trainLabel; labelArr];
-
-    end
+     
+     %Ten file ColorHist.mat cho Tap Test
+    fileColorHistVector=strcat('ColorHistForTest.mat');
+    pathTofileColorHistVector=strcat(strPathWorkingData,fileColorHistVector);
+    fHist=fopen(pathTofileColorHistVector,'r');
+    
+    %Doc xong, chuyen vi de thu duoc dung format Color Histogram
+    %Luu y: chieu dai cua color histogram concatenation vector là 4752 phan  tu 
+    colorHistVectorArr=(fread(fHist,[4752, numOfElemensTest],'uint16=>double'))';
+        
+    %Normalize du lieu
+    maxValue = max(max(colorHistVectorArr));
+    colorHistVectorArr=colorHistVectorArr/maxValue;
+    fclose(fHist);
+    
+    %Doc file Label vao labelArr (la ma tran cot)
+    fileLabel=strcat('LabelForTest.mat');
+    fullPathToFileLabel=strcat(strPathWorkingData,fileLabel);
+    fLabel=fopen(fullPathToFileLabel,'r');
+    labelArr= fread(fLabel,[numOfElemensTest, 1],'int8=>double');
+    fclose(fLabel);
+    % Tap Test
+     testData = colorHistVectorArr;
+     groundTruthLabel= labelArr;
+     
+          
     fprintf('\n i=%u ',i);
-end
+% end
  fprintf('\n Training phase with test file no %i running ... \n',excludeFileNo);
 %SVMStruct = svmtrain(trainData,trainLabel,'autoscale','kernel_function','linear');
 % strOptions='-s 0 -t 0 -b 1';

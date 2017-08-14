@@ -1,24 +1,27 @@
-function [numOfBytes,intSizeOfList]=FeatureExtractAll_HistColor( fileTrain, fileColorHist, fileLabel )
-%FeatureExtractAll_HistColor: Doc fileTrain va extract vector dac trung cho
-%moi dong cua fileTrain, ket qua ghi xuong file fileColorHist (binary
+function [numOfBytes,intSizeOfList]=FeatureExtractAll_HistColor( fileTrainOrTest, fileColorHist, fileLabel,flag )
+%FeatureExtractAll_HistColor: Doc fileTrainOrTest va extract vector dac trung cho
+%moi dong cua fileTrainOrTest, ket qua ghi xuong file fileColorHist (binary
 %format), ngoai ra, cung tao ra fileLabel chua annotation
+%flag=1: Train
+%flag=0: Test
 % Tra ve: mumOfBytes: Tong so byte ghi xuong
 % intSizeofList: so dong (hoac so vector,  moi vector co chieu dai 4752 phan tu 1 byte)
 %Thuat toan:
-%   Voi moi dong d cua fileTrain
+%   Voi moi dong d cua fileTrainOrTest
 %        clvA=Tinh Vector color histogram cua thanh phan thu 1
 %        clvB=Tinh Vector color histogram cua thanh phan thu 2
 %        clvC=clvA-clvB
 %        ghi [clvA, clvB, clvC] xuong fileColorHist
 tic;
 global strPathData;
+global strPathWorkingData;
 
 
 %Doc fileTrain
-[fileImgArrayA, fileImgArrayB, annotationArray]=importfileTrain(fileTrain);
+[fileImgArrayA, fileImgArrayB, annotationArray]=importfileTrain(fileTrainOrTest);
 %Tao file Label
 fLabel= fopen(fileLabel,'w');
-fwrite(fLabel,annotationArray,'uint8');
+fwrite(fLabel,annotationArray,'int8');
 fclose(fLabel);
 %intSizeOfList: so dong cua fileTrain
 intSizeOfList=size(fileImgArrayA,1);
@@ -42,6 +45,15 @@ for i=1:intSizeOfList
 end
 fclose(fHist);
 numOfBytes=numBytes;
+
+%Tao file Element.txt luu trong strPathData
+if flag==1 
+    fElement= fopen(strcat(strPathWorkingData,'ElementTrain.txt'),'w');
+else
+    fElement= fopen(strcat(strPathWorkingData,'ElementTest.txt'),'w');
+end;
+fprintf(fElement,'%u',intSizeOfList);
+fclose(fElement);
 toc;
 end
 

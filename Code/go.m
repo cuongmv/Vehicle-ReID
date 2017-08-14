@@ -37,17 +37,21 @@ switch num
             generateTrainAndTest(fileNameGroundTruth,index);
         end;
         combineFile(); %Combine the Train*.lst(s) into the file Train.txt, Test*.lst into the file Test.txt
-    case 2 %Generate color histogram feature vector files
+    case 2 %Generate color histogram feature vector files for training part
             fileTrain= strcat(strPathWorkingData,'Train.txt');
-            fileColorHist= strcat(strPathWorkingData,'ColorHist.mat');
-            fileLabel=strcat(strPathWorkingData,'Label.mat');
-            FeatureExtractAll_HistColor(fileTrain,fileColorHist,fileLabel);
+            fileColorHistForTrain= strcat(strPathWorkingData,'ColorHistForTrain.mat');
+            fileLabelForTrain=strcat(strPathWorkingData,'LabelForTrain.mat');
+            FeatureExtractAll_HistColor(fileTrain,fileColorHistForTrain,fileLabelForTrain,1);
+            %Generate color histogram feature vector files for testing part
+            fileTest= strcat(strPathWorkingData,'Test.txt');
+            fileColorHistForTest= strcat(strPathWorkingData,'ColorHistForTest.mat');
+            fileLabelForTest=strcat(strPathWorkingData,'LabelForTest.mat');
+            FeatureExtractAll_HistColor(fileTest,fileColorHistForTest,fileLabelForTest,0);
         
     case 3 %Training with Color Histogram Feature
-        for excludeFileNo=1:5;
-            strPathToSaveResult=strcat(strPathResults,'Color\L',num2str(excludeFileNo),'\');
-            colorHistSVMTrain(excludeFileNo,strPathToSaveResult);
-        end;
+            strPathToSaveResult=strcat(strPathResults,'Color\');
+            colorHistSVMTrain(strPathToSaveResult);
+      
     case 4
 %         strImg='Train2.lst';
 %         intSeq=101;
